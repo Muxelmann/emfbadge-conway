@@ -13,7 +13,7 @@ ugfx.init()
 buttons.init()
 buttons.disable_menu_reset()
 
-w, h, s = 32, 24, 10
+w, h, s = 40, 30, 8
 grid = [[False for x in range(w)] for y in range(h)]
 grid_next = [[False for x in range(w)] for y in range(h)]
 
@@ -40,6 +40,27 @@ def random_grid():
 	for x in range(w):
 		for y in range(h):
 			grid[y][x] = int(pyb.rng() & 0x01) == 1
+
+def put_blinker(x, y):
+	"""Adds a blinker"""
+	clear_grid()
+	grid[y][x-1:x+2:] = [True, True, True]
+
+def put_clock(x, y):
+	"""Adds a clock"""
+	clear_grid()
+	grid[y-2][x-2:x+2] = [False, True,  False, False]
+	grid[y-1][x-2:x+2] = [False, True,  False, True]
+	grid[y][x-2:x+2]   = [True,  False, True,  False]
+	grid[y+1][x-2:x+2] = [False, False, True,  False]
+
+def put_bipole(x, y):
+	"""Adds a bipole"""
+	clear_grid()
+	grid[y-2][x-2:x+2] = [False, True,  False, False]
+	grid[y-1][x-2:x+2] = [False, True,  True,  False]
+	grid[y][x-2:x+2]   = [False, True,  True,  False]
+	grid[y+1][x-2:x+2] = [False, False, True,  False]
 
 def surrounding(x, y):
 	"""Counts the number of surrounding blocks"""
@@ -70,7 +91,7 @@ def update():
 ## Running the main code
 
 ugfx.clear(ugfx.GREY)
-random_grid()
+put_bipole(w//2, h//2)
 draw_grid()
 
 playing = True
