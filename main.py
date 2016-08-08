@@ -2,12 +2,13 @@
 ### Description: Plays the game of life
 ### Category: Games
 ### License: MIT
-### Appname: Conway
+### Appname: Game of Life
 ### Built-in: no
 
 import pyb
 import ugfx
 import buttons
+import dialogs
 
 ugfx.init()
 buttons.init()
@@ -62,6 +63,15 @@ def put_bipole(x, y):
 	grid[y][x-2:x+2]   = [False, True,  True,  False]
 	grid[y+1][x-2:x+2] = [False, False, True,  False]
 
+def put_tripole(x, y):
+	"""Adds a tripole"""
+	clear_grid()
+	grid[y-2][x-2:x+3] = [True,  True,  False, False, False]
+	grid[y-1][x-2:x+3] = [True,  False, True,  False, False]
+	grid[y][x-2:x+3]   = [False, False, False, False, False]
+	grid[y+1][x-2:x+3] = [False, False, True,  False, True]
+	grid[y+2][x-2:x+3] = [False, False, False, True,  True]
+
 def surrounding(x, y):
 	"""Counts the number of surrounding blocks"""
 
@@ -90,11 +100,18 @@ def update():
 
 ## Running the main code
 
-ugfx.clear(ugfx.GREY)
-put_bipole(w//2, h//2)
+playing = dialogs.prompt_boolean("""
+button A\t: next step
+button B\t: run/pause
+joystick\t: resets the game
+menu\t: quits app
+Shall we play a game professor Falken?
+""", title='Conway\'s Game of Life', true_text="Play", false_text="Quit")
+
+random_grid()
 draw_grid()
 
-playing = True
+
 running = False
 
 while playing:
@@ -106,6 +123,11 @@ while playing:
 
 		if buttons.is_triggered('BTN_B'):
 			running = not running
+
+		if buttons.is_triggered('JOY_CENTER'):
+			running = False
+			random_grid()
+			draw_grid()
 
 		if running:
 			update()
